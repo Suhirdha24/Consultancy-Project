@@ -1,60 +1,80 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { FaFire, FaClipboardList, FaFileAlt } from "react-icons/fa";
+import { Link, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Package,
+  AlertTriangle,
+  ShoppingBag,
+  Users,
+  Scan,
+  BarChart3,
+  TrendingUp,
+  Store,
+} from "lucide-react";
 
-const AdminSidebar = () => {
+const SideBar = () => {
+  const location = useLocation();
+
+  const navItems = [
+    { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
+    { label: "Products & Stock", path: "/admin/products", icon: Package },
+    { label: "Stock Alerts", path: "/admin/alerts", icon: AlertTriangle },
+    { label: "Orders", path: "/admin/orders", icon: ShoppingBag },
+    { label: "Suppliers", path: "/admin/suppliers", icon: Users },
+    { label: "Barcode Scanner", path: "/admin/scanner", icon: Scan },
+    { label: "Analytics & PDF", path: "/admin/report", icon: BarChart3 },
+    { label: "AI Forecast", path: "/admin/forecast", icon: TrendingUp },
+  ];
+
   return (
-    <div className="h-screen w-64 bg-gray-800 text-white flex flex-col p-4 shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">Admin Panel</h2>
+    <aside className="w-64 bg-slate-900 text-slate-300 min-h-screen p-4 flex flex-col justify-between shadow-xl">
+      <div className="space-y-6">
+        {/* Brand Header */}
+        <div className="flex items-center gap-3 px-3 py-2 border-b border-slate-800">
+          <div className="p-2 bg-emerald-500 rounded-xl text-slate-900 font-extrabold">
+            <Store className="w-6 h-6" />
+          </div>
+          <div>
+            <h2 className="font-extrabold text-white text-lg leading-none">FreshGrocery</h2>
+            <span className="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">
+              Admin Portal
+            </span>
+          </div>
+        </div>
 
-      <NavLink
-        to="/admin/Products"
-        className={({ isActive }) =>
-          `flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 ${
-            isActive ? "bg-gray-700" : ""
-          }`
-        }
-      >
-        <FaFire />
-        Products
-      </NavLink>
+        {/* Nav Links */}
+        <nav className="space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              location.pathname === item.path ||
+              (item.path !== "/admin" && location.pathname.startsWith(item.path));
 
-      <NavLink
-        to="/admin/orders"
-        className={({ isActive }) =>
-          `flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 ${
-            isActive ? "bg-gray-700" : ""
-          }`
-        }
-      >
-        <FaClipboardList />
-        Orders Placed
-      </NavLink>
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition ${
+                  isActive
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-900/40"
+                    : "hover:bg-slate-800 hover:text-white text-slate-400"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
-      {/* <NavLink
-        to="/admin/report"
-        className={({ isActive }) =>
-          `flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 ${
-            isActive ? "bg-gray-700" : ""
-          }`
-        }
-      >
-        <FaFileAlt />
-        Report
-      </NavLink> */}
-      <NavLink
-        to="/admin/addproduct"
-        className={({ isActive }) =>
-          `flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 ${
-            isActive ? "bg-gray-700" : ""
-          }`
-        }
-      >
-        {/* <FontAwesomeIcon icon={faProductHunt} /> */}
-        Add a product
-      </NavLink>
-    </div>
+      {/* Footer Info */}
+      <div className="px-3 py-3 border-t border-slate-800 text-xs text-slate-500">
+        <p>System Status: <span className="text-emerald-400 font-semibold">Online</span></p>
+        <p className="mt-1 font-mono text-[10px]">v2.4.0 • Enterprise Edition</p>
+      </div>
+    </aside>
   );
 };
 
-export default AdminSidebar;
+export default SideBar;

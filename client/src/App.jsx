@@ -3,43 +3,41 @@ import Navbar from "./Components/Navbar";
 import Home from "./Pages/Home";
 import Products from "./Pages/Products";
 import Order from "./Pages/Order";
+import Cart from "./Pages/Cart";
+import MyOrders from "./Pages/MyOrders";
 import Contact from "./Pages/Contact";
 import About from "./Pages/About";
 import Footer from "./Components/Footer";
-import AddProduct from "./Pages/AddProduct";
-import { AuthProvider } from "./context/AuthContext";  // Import AuthProvider
-// import PrivateRoute from "./src/components/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
-import { CartProvider } from './Pages/CartContext';
-
-import ProductDetailsPage from './Pages/ProductDetailsPage';
-
+import { CartProvider } from "./Pages/CartContext";
+import ProductDetailsPage from "./Pages/ProductDetailsPage";
 
 function App() {
   return (
-    <AuthProvider> {/* Wrap the app in AuthProvider to provide authentication context */}
+    <AuthProvider>
       <CartProvider>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetailsPage />} />
-          {/* <Route path="/cart" element={<Cart cart={cart} setCart={setCart} />} /> */}
-          <Route path="/booking" element={<Order />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
-
-          {/* Protect the AddProduct route with PrivateRoute */}
-          {/* <Route path="/add-product" element={<AddProduct />} /> */}
-
-          {/* Authentication routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-        <Footer />
-      </Router>
+        <Router>
+          <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+            <Navbar />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetailsPage />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/orders" element={<MyOrders />} />
+                <Route path="/booking" element={<Order />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
       </CartProvider>
     </AuthProvider>
   );
