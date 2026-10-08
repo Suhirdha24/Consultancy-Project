@@ -34,7 +34,7 @@ const Cart = ({ cart, setCart }) => {
     }
 
     try {
-      await axios.post("http://localhost:5000/place-order", {
+      await axios.post("http://localhost:5000/api/orders/place-order", {
         ...userDetails,
         items: cart,
       });
