@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useCart } from "./CartContext"; // Import the cart context
+import apiClient from "../lib/api";
 
 const Order = ({ selectedItems = [], totalAmount = 0, closePopup }) => {
   const [name, setName] = useState("");
@@ -50,9 +50,9 @@ const Order = ({ selectedItems = [], totalAmount = 0, closePopup }) => {
 
   const updateStockInDatabase = async () => {
     try {
-      await axios.put("http://localhost:5000/api/products/update-stock", {
+      await apiClient.put("/products/update-stock", {
         items: selectedItems.map(item => ({
-          productId: item.id,
+          productId: item.id || item._id,
           quantity: item.quantity
         }))
       });
@@ -93,7 +93,7 @@ const Order = ({ selectedItems = [], totalAmount = 0, closePopup }) => {
       handler: async function (response) {
         try {
           // 1. Save payment details
-          await axios.post("http://localhost:5000/api/payments/save-payment", {
+          await apiClient.post("/payments/save-payment", {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
@@ -103,7 +103,7 @@ const Order = ({ selectedItems = [], totalAmount = 0, closePopup }) => {
           });
 
           // 2. Place order
-          await axios.post("http://localhost:5000/api/orders/place-order", {
+          await apiClient.post("/orders/place-order", {
             name,
             phone: mobile,
             address,
@@ -126,7 +126,7 @@ const Order = ({ selectedItems = [], totalAmount = 0, closePopup }) => {
         }
       },
       prefill: { name, email, contact: mobile },
-      theme: { color: "#f37254" },
+      theme: { color: "#10b981" },
     };
 
     try {

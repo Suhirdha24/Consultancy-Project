@@ -18,6 +18,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Health Check Endpoints for Deployment Platforms
+app.get("/health", (req, res) => res.status(200).json({ status: "OK", timestamp: new Date() }));
+app.get("/", (req, res) => res.status(200).json({ message: "Vishal Super Market Backend API is Running", status: "OK" }));
+
 // Versioned / Standard API routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/products", productRoutes);

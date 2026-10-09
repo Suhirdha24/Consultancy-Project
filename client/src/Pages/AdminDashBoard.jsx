@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "../lib/api";
 
 const AdminDashboard = () => {
   const [orders, setOrders] = useState([]);
@@ -8,11 +8,11 @@ const AdminDashboard = () => {
 
   // Fetch orders
   useEffect(() => {
-    axios.get("http://localhost:5000/orders")
+    apiClient.get("/orders")
       .then((res) => setOrders(res.data))
       .catch((err) => console.error("Error fetching orders:", err));
 
-    axios.get("http://localhost:5000/products")
+    apiClient.get("/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error("Error fetching products:", err));
   }, []);
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
   // Add new product
   const addProduct = () => {
-    axios.post("http://localhost:5000/add-product", newProduct)
+    apiClient.post("/products/add-product", newProduct)
       .then((res) => {
         setProducts([...products, res.data]);
         setNewProduct({ name: "", price: "", quantity: "" });
@@ -34,7 +34,7 @@ const AdminDashboard = () => {
 
   // Remove product
   const removeProduct = (id) => {
-    axios.delete(`http://localhost:5000/delete-product/${id}`)
+    apiClient.delete(`/products/${id}`)
       .then(() => setProducts(products.filter((product) => product._id !== id)))
       .catch((err) => console.error("Error deleting product:", err));
   };

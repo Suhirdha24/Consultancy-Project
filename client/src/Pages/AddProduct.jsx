@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import apiClient from "../lib/api";
 import "./AddProduct.css";
 const AddProduct = () => {
   const [name, setName] = useState("");
@@ -17,7 +17,7 @@ const AddProduct = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/api/products/add-product", productData);
+      const response = await apiClient.post("/products/add-product", productData);
       setMessage("Product added successfully!");
       setName("");
       setPrice("");

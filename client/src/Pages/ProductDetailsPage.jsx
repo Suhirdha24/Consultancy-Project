@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useCart } from './CartContext';
+import apiClient from '../lib/api';
 
 const ProductDetailsPage = () => {
     const { id } = useParams();
@@ -10,15 +10,15 @@ const ProductDetailsPage = () => {
     const { quantities, handleQuantityChange } = useCart();
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/products/${id}`)
+        apiClient.get(`/products/${id}`)
             .then(res => setProduct(res.data))
             .catch(err => console.error(err));
     }, [id]);
 
-    if (!product) return <div className="text-center py-20 text-xl">Loading...</div>;
+    if (!product) return <div className="text-center py-20 text-xl font-medium text-slate-600">Loading product details...</div>;
 
     return (
-        <div className="pt-20 px-4 sm:px-8 lg:px-24 min-h-screen bg-gradient-to-br from-yellow-50 to-red-50">
+        <div className="py-12 px-4 sm:px-8 lg:px-24 min-h-screen bg-slate-50">
             <div className="max-w-6xl mx-auto space-y-6">
                 <button
                     onClick={() => navigate(-1)}

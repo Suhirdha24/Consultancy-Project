@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../lib/api';
 
 const AddProduct = () => {
   const [form, setForm] = useState({
@@ -21,7 +21,7 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/products/add-product', {
+      const res = await apiClient.post('/products/add-product', {
         name: form.name,
         desc: form.desc,
         price: parseFloat(form.price),
