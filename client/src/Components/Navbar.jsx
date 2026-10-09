@@ -128,10 +128,15 @@ const Navbar = () => {
             </Link>
 
             {user ? (
-              <div className="flex items-center gap-3">
-                <span className="hidden sm:inline-block text-xs text-slate-500 font-medium">
-                  Hi, <strong className="text-slate-800">{user.username || user.name}</strong>
-                </span>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-1.5 text-xs bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 px-3 py-2 rounded-2xl font-bold transition border border-slate-200"
+                  title="View Profile & Settings"
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Hi, <strong className="text-slate-900">{user.username || user.name}</strong></span>
+                </Link>
                 <button
                   onClick={logout}
                   className="flex items-center gap-1.5 text-xs bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 px-3 py-2 rounded-2xl font-bold transition border border-slate-200"

@@ -11,6 +11,7 @@ import Footer from "./Components/Footer";
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
+import Profile from "./Pages/Profile";
 import { CartProvider } from "./Pages/CartContext";
 import ProductDetailsPage from "./Pages/ProductDetailsPage";
 
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={<Profile />} />
               </Routes>
             </main>
             <Footer />
