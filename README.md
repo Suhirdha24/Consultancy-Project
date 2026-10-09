@@ -1,6 +1,15 @@
-# FreshGrocery — Enterprise Grocery E-Commerce & Inventory Management System
+# 🛒 Vishal Super Market — Enterprise Grocery E-Commerce & Inventory Management System
 
-A production-ready, full-stack MERN application for retail grocery e-commerce and real-time inventory stock management. Features SKU tracking, barcode scanner simulation, low-stock & expiry automated alerts, supplier lead-time management, sales analytics, and AI demand forecasting.
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Production%20Live-emerald?style=for-the-badge&logo=vercel)](https://consultancy-project-dusky-xi.vercel.app)
+[![MongoDB Atlas](https://img.shields.io/badge/MongoDB%20Atlas-Cloud%20Connected-green?style=for-the-badge&logo=mongodb)](https://cluster0.0f2qko.mongodb.net)
+
+---
+
+## 🌐 Live Production Deployment Links
+
+- **🛒 Customer Storefront (Live Website)**: [https://consultancy-project-dusky-xi.vercel.app](https://consultancy-project-dusky-xi.vercel.app)
+- **⚙️ Admin Management Portal**: [https://consultancy-project-dusky-xi.vercel.app/admin](https://consultancy-project-dusky-xi.vercel.app/admin)
+- **🖥️ Backend REST API Service**: [https://consultancy-project-dusky-xi.vercel.app/api](https://consultancy-project-dusky-xi.vercel.app/api)
 
 ---
 
@@ -11,7 +20,7 @@ A production-ready, full-stack MERN application for retail grocery e-commerce an
 - **Dynamic Shopping Cart**: Real-time quantity adjustments, price calculation, discount handling, and persistent `localStorage` cart state.
 - **Checkout & Orders**: Secure order placement with shipping address management, payment method selection (COD/Online), and instant invoice generation.
 - **Customer Order Tracking**: Real-time delivery status updates (`PENDING`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`).
-- **Responsive Dark/Light UI**: Built with React, Tailwind CSS, and Lucide Icons.
+- **Responsive Slate/Emerald UI**: Built with React, Tailwind CSS, and Lucide Icons.
 
 ### Enterprise Admin Portal (`/admin`)
 - **Executive Dashboard**: Key metrics for total revenue, active orders, product catalog count, and live inventory warnings.
