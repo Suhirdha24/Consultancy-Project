@@ -1,15 +1,15 @@
 # 🛒 Vishal Super Market — Enterprise Grocery E-Commerce & Inventory Management System
 
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Production%20Live-emerald?style=for-the-badge&logo=vercel)](https://consultancy-project-dusky-xi.vercel.app)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Production%20Live-emerald?style=for-the-badge&logo=vercel)](https://consultancy-project-git-main-suhirdha24s-projects.vercel.app)
 [![MongoDB Atlas](https://img.shields.io/badge/MongoDB%20Atlas-Cloud%20Connected-green?style=for-the-badge&logo=mongodb)](https://cluster0.0f2qko.mongodb.net)
 
 ---
 
 ## 🌐 Live Production Deployment Links
 
-- **🛒 Customer Storefront (Live Website)**: [https://consultancy-project-dusky-xi.vercel.app](https://consultancy-project-dusky-xi.vercel.app)
-- **⚙️ Admin Management Portal**: [https://consultancy-project-dusky-xi.vercel.app/admin](https://consultancy-project-dusky-xi.vercel.app/admin)
-- **🖥️ Backend REST API Service**: [https://consultancy-project-dusky-xi.vercel.app/api](https://consultancy-project-dusky-xi.vercel.app/api)
+- **🛒 Customer Storefront (Live Website)**: [https://consultancy-project-git-main-suhirdha24s-projects.vercel.app](https://consultancy-project-git-main-suhirdha24s-projects.vercel.app)
+- **⚙️ Admin Management Portal**: [https://consultancy-project-git-main-suhirdha24s-projects.vercel.app/admin](https://consultancy-project-git-main-suhirdha24s-projects.vercel.app/admin)
+- **🖥️ Backend REST API Service**: [https://consultancy-project-git-main-suhirdha24s-projects.vercel.app/api](https://consultancy-project-git-main-suhirdha24s-projects.vercel.app/api)
 
 ---
 
