@@ -31,11 +31,11 @@ const SideBar = () => {
       <div className="space-y-6">
         {/* Brand Header */}
         <div className="flex items-center gap-3 px-3 py-2 border-b border-slate-800">
-          <div className="p-2 bg-emerald-500 rounded-xl text-slate-900 font-extrabold">
-            <Store className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-xl shadow-sm">
+            V
           </div>
           <div>
-            <h2 className="font-extrabold text-white text-lg leading-none">FreshGrocery</h2>
+            <h2 className="font-extrabold text-white text-base leading-none">Vishal Super Market</h2>
             <span className="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">
               Admin Portal
             </span>

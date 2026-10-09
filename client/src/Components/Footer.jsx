@@ -9,7 +9,7 @@ const Footer = () => {
         {/* Brand Overview */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-red-600 text-white font-black text-xl flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white font-black text-xl flex items-center justify-center">
               V
             </div>
             <span className="text-xl font-bold text-white">Vishal Super Market</span>
