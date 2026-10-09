@@ -118,8 +118,12 @@ const ProductsPage = () => {
                         src={
                           product.imageUrl ||
                           product.image ||
-                          "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400"
+                          "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"
                         }
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80";
+                        }}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
