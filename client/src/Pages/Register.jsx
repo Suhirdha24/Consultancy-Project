@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../lib/api";
 
 const Register = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [message, setMessage] = useState({ text: "", type: "" });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,7 +18,10 @@ const Register = () => {
     setMessage({ text: "", type: "" });
     try {
       await apiClient.post("/auth/register", form);
-      setMessage({ text: "Registration successful! You can now log in.", type: "success" });
+      alert("Registration successful! Redirecting to login page...");
+      navigate("/login", {
+        state: { registeredMessage: "Registration successful! Please log in with your credentials." },
+      });
     } catch (err) {
       const errMsg = err.response?.data?.message || "Registration failed. Please try again.";
       setMessage({ text: errMsg, type: "error" });
