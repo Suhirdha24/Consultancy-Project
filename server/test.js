@@ -3,6 +3,7 @@
  * Run: node test.js
  */
 
+require("dns").setServers(["8.8.8.8", "1.1.1.1"]);
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
@@ -14,7 +15,7 @@ const Order = require("./models/OrderModel");
 const InventoryTransaction = require("./models/InventoryTransaction");
 const StockAlert = require("./models/StockAlert");
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/grocery_app";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/grocery_db";
 
 async function runSystemTests() {
   console.log("=================================================");

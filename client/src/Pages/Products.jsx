@@ -1,229 +1,213 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Order from "./Order";
-import axios from "axios";
 import { useCart } from "./CartContext";
+import { apiClient } from "../lib/api";
+import { Search, ShoppingBag, Plus, Minus, Check, Tag } from "lucide-react";
 
 const ProductsPage = () => {
-  const [groupedProducts, setGroupedProducts] = useState({});
-  const [showOrderPopup, setShowOrderPopup] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const { quantities, handleQuantityChange } = useCart();
+  const [selectedCategory, setSelectedCategory] = useState("ALL");
+
+  const { cartItems, addToCart, updateQuantity } = useCart();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/products/getall-products")
-      .then((res) => {
-        setGroupedProducts(res.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching products", err);
-      });
+    fetchProducts();
   }, []);
 
-  const getGrandTotal = () => {
-    return Object.values(quantities).reduce(
-      (total, item) => total + item.quantity * item.price,
-      0
-    );
-  };
-
-  const getSelectedItems = () => {
-    const selected = [];
-    Object.entries(quantities).forEach(([id, { quantity, price }]) => {
-      const product = Object.values(groupedProducts)
-        .flat()
-        .find(item => item._id === id);
-
-      if (product && quantity > 0) {
-        selected.push({
-          id: product._id,
-          name: product.name,
-          quantity,
-          price,
-          total: price * quantity
-        });
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await apiClient.get("/products");
+      let data = res.data;
+      if (typeof data === "object" && !Array.isArray(data)) {
+        data = Object.values(data).flat();
       }
-    });
-    return selected;
-  };
-
-  const getFilteredProducts = () => {
-    if (!searchTerm.trim()) return groupedProducts;
-
-    const filtered = {};
-    Object.entries(groupedProducts).forEach(([type, products]) => {
-      const matched = products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      if (matched.length > 0) {
-        filtered[type] = matched;
-      }
-    });
-
-    return filtered;
-  };
-
-  const handleCheckout = () => {
-    const selectedItems = getSelectedItems();
-    if (selectedItems.length === 0) {
-      alert("Please select at least one item.");
-      return;
+      setProducts(data || []);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    } finally {
+      setLoading(false);
     }
-    setShowOrderPopup(true);
   };
 
-  const closePopup = () => {
-    setShowOrderPopup(false);
+  const categories = ["ALL", ...new Set(products.map((p) => p.category || p.productType || "General"))];
+
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch = p.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const cat = p.category || p.productType || "General";
+    const matchesCat = selectedCategory === "ALL" || cat.toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCat;
+  });
+
+  const getCartQty = (id) => {
+    const item = cartItems.find((ci) => (ci.product._id || ci.product.id) === id);
+    return item ? item.quantity : 0;
   };
 
   return (
-    <div className="pt-16 px-8 relative">
-      <div className="p-6 bg-gradient-to-br from-yellow-50 to-red-50 min-h-screen">
-        <div className="mb-1 text-center">
-          <div className="sticky flex flex-col justify-center items-center top-12 bg-transparent to-red-50 text-green-900 font-bold p-4 rounded-md text-center text-2xl mb-2">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header & Search */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b dark:border-slate-800 pb-6">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-3">
+              <ShoppingBag className="w-8 h-8 text-emerald-600" /> Explore Grocery Store
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Farm fresh produce, dairy, bakery, and essential groceries delivered in minutes.
+            </p>
+          </div>
+
+          <div className="relative w-full md:w-80">
+            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
             <input
               type="text"
-              placeholder="🔍 Search products by name..."
+              placeholder="Search produce, milk, rice..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full max-w-xl px-2 py-2 text-lg bg-white border border-black-500 bg-red-100 text-black-800 placeholder-black-400 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-black-400 transition duration-300"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
-          </div>
-          <div className="text-center">
-            <h1 className="bg-green-700 w-96 p-3 rounded-lg text-white">
-              💰 Total Amount: ₹{getGrandTotal().toFixed(2)}
-            </h1>
           </div>
         </div>
 
-        {Object.keys(getFilteredProducts()).map((type) => (
-          <div key={type} className="mb-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getFilteredProducts()[type].map((product) => {
-                const { _id, image, name, price, discount_percent = 0, stock = 0 } = product;
-                const outOfStock = stock === 0;
-                const discountedPrice = price * (1 - discount_percent / 100);
+        {/* Category Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition capitalize shrink-0 ${
+                selectedCategory.toLowerCase() === cat.toLowerCase()
+                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-900/30"
+                  : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:bg-gray-100"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
 
-                return (
-                  <div key={_id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                    <Link
-                      to={`/products/${_id}`}
-                      className="block cursor-pointer relative"
-                    >
-                      <img
-                        src={image}
-                        alt={name}
-                        className="h-80 w-full object-contain rounded-t-lg"
-                      />
-                      {discount_percent > 0 && (
-                        <div className="absolute top-0 left-0 bg-red-600 text-white py-1 px-3 text-sm rounded-br-lg">
-                          {discount_percent}% off
-                        </div>
+        {/* Product Grid */}
+        {loading ? (
+          <div className="py-20 text-center text-emerald-600">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-500 border-t-transparent mx-auto"></div>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="py-16 text-center bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+            <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+            <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300">No products match your search</h3>
+            <p className="text-xs text-gray-500">Try searching for a different keyword or category.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => {
+              const id = product._id || product.id;
+              const cartQty = getCartQty(id);
+              const outOfStock = (product.stock || 0) === 0;
+              const discountedPrice = product.discount
+                ? product.price * (1 - product.discount / 100)
+                : product.price;
+
+              return (
+                <div
+                  key={id}
+                  className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between"
+                >
+                  <div className="relative">
+                    <img
+                      src={
+                        product.imageUrl ||
+                        product.image ||
+                        "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400"
+                      }
+                      alt={product.name}
+                      className="w-full h-48 object-cover bg-gray-50 dark:bg-slate-700"
+                    />
+                    {product.discount > 0 && (
+                      <span className="absolute top-3 left-3 bg-rose-600 text-white font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-full shadow-md">
+                        {product.discount}% OFF
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                        {product.category || product.productType || "Grocery"}
+                      </span>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-base leading-snug line-clamp-1">
+                        {product.name}
+                      </h3>
+                      {product.sku && (
+                        <p className="text-[10px] text-gray-400 font-mono mt-0.5">SKU: {product.sku}</p>
                       )}
-                      <div className="p-4">
-                        <h3 className="text-xl font-semibold">{name}</h3>
-                        <div className="grid grid-cols-2 gap-2 mt-2">
-                          <p className="text-green-700">
-                            ₹{discountedPrice.toFixed(2)}{" "}
-                            <span className="line-through text-gray-400">₹{price}</span>
-                          </p>
-                          <p className="text-blue-700 col-span-2">
-                            Stock: {stock} {outOfStock && "(Out of Stock)"}
-                          </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t dark:border-slate-700">
+                      <div>
+                        <span className="text-lg font-extrabold text-emerald-600">
+                          ₹{discountedPrice.toFixed(2)}
+                        </span>
+                        {product.discount > 0 && (
+                          <span className="text-xs line-through text-gray-400 ml-1.5 font-normal">
+                            ₹{product.price.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs font-medium text-gray-500">
+                        {outOfStock ? (
+                          <strong className="text-rose-600">Out of Stock</strong>
+                        ) : (
+                          `${product.stock} left`
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Add to Cart Actions */}
+                    <div className="pt-1">
+                      {outOfStock ? (
+                        <button
+                          disabled
+                          className="w-full py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-400 font-bold rounded-xl text-xs cursor-not-allowed"
+                        >
+                          Out of Stock
+                        </button>
+                      ) : cartQty === 0 ? (
+                        <button
+                          onClick={() => addToCart(product, 1)}
+                          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-1.5"
+                        >
+                          <Plus className="w-4 h-4" /> Add to Cart
+                        </button>
+                      ) : (
+                        <div className="flex items-center justify-between border border-emerald-500 rounded-xl overflow-hidden bg-emerald-50 dark:bg-emerald-950/40 p-1">
+                          <button
+                            onClick={() => updateQuantity(id, -1)}
+                            className="p-1.5 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200/50 rounded-lg transition"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          <span className="font-extrabold text-sm text-emerald-800 dark:text-emerald-300">
+                            {cartQty} in Cart
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(id, 1)}
+                            className="p-1.5 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200/50 rounded-lg transition"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
                         </div>
-                      </div>
-                    </Link>
-                    <div className="p-4 border-t">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleQuantityChange(
-                            _id,
-                            discountedPrice,
-                            discount_percent,
-                            Math.max((quantities[_id]?.quantity || 0) - 1, 0),
-                            stock
-                          )}
-                          className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={outOfStock || (quantities[_id]?.quantity || 0) === 0}
-                          aria-label="Decrease quantity"
-                        >
-                          -
-                        </button>
-
-                        <input
-                          type="number"
-                          min="0"
-                          max={stock}
-                          value={quantities[_id]?.quantity || 0}
-                          onChange={(e) => handleQuantityChange(
-                            _id,
-                            discountedPrice,
-                            discount_percent,
-                            e.target.value.replace(/\D/g, ""),
-                            stock
-                          )}
-                          className="w-20 px-3 py-2 border rounded text-center"
-                          disabled={outOfStock}
-                          placeholder="0"
-                        />
-
-                        <button
-                          onClick={() => handleQuantityChange(
-                            _id,
-                            discountedPrice,
-                            discount_percent,
-                            Math.min((quantities[_id]?.quantity || 0) + 1, stock),
-                            stock
-                          )}
-                          className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={outOfStock || (quantities[_id]?.quantity || 0) >= stock}
-                          aria-label="Increase quantity"
-                        >
-                          +
-                        </button>
-                      </div>
-                      {!outOfStock && (
-                        <p className="text-sm mt-1 text-gray-600 text-center">
-                          {/* Available: {stock} */}
-                        </p>
                       )}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-
-        <div className="text-center mt-10">
-          <button
-            onClick={handleCheckout}
-            className="bg-green-700 hover:bg-red-600 text-white px-6 py-3 rounded-lg text-xl shadow-lg"
-          >
-             🛒  Proceed to Checkout
-          </button>
-        </div>
+        )}
       </div>
-
-      {/* Order Popup Modal */}
-      {showOrderPopup && (
-        <div
-          className="fixed inset-0 bg-[rgba(0,0,0,0.48)] flex items-center justify-center z-50"
-          onClick={closePopup}
-        >
-          <div
-            className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Order
-              selectedItems={getSelectedItems()}
-              totalAmount={getGrandTotal()}
-              closePopup={closePopup}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
