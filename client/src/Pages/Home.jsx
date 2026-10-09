@@ -8,6 +8,7 @@ import {
   Truck,
   ShieldCheck,
   Plus,
+  Minus,
   ChevronRight,
   Clock,
   CheckCircle2,
@@ -20,11 +21,16 @@ import {
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart();
+  const { cartItems, addToCart, updateQuantity } = useCart();
 
   useEffect(() => {
     fetchFeatured();
   }, []);
+
+  const getCartQty = (id) => {
+    const item = cartItems.find((ci) => (ci.product._id || ci.product.id) === id);
+    return item ? item.quantity : 0;
+  };
 
   const fetchFeatured = async () => {
     try {
@@ -179,6 +185,7 @@ const Home = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((prod) => {
               const id = prod._id || prod.id;
+              const cartQty = getCartQty(id);
               const unitPrice = prod.discount
                 ? prod.price * (1 - prod.discount / 100)
                 : prod.price;
@@ -227,12 +234,34 @@ const Home = () => {
                       )}
                     </div>
 
-                    <button
-                      onClick={() => addToCart(prod, 1)}
-                      className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1"
-                    >
-                      <Plus className="w-3.5 h-3.5" /> Add
-                    </button>
+                    {cartQty === 0 ? (
+                      <button
+                        onClick={() => addToCart(prod, 1)}
+                        className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Add
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-500 rounded-xl p-1">
+                        <button
+                          onClick={() => updateQuantity(id, -1)}
+                          className="p-1 text-emerald-700 hover:bg-emerald-200 rounded-lg transition"
+                          title="Decrease quantity"
+                        >
+                          <Minus className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="font-extrabold text-xs text-emerald-800 px-1">
+                          {cartQty}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(id, 1)}
+                          className="p-1 text-emerald-700 hover:bg-emerald-200 rounded-lg transition"
+                          title="Increase quantity"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

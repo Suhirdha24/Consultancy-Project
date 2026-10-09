@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { CheckCircle2, ShoppingBag, X } from 'lucide-react';
 
 const CartContext = createContext();
 
@@ -13,6 +15,7 @@ export const CartProvider = ({ children }) => {
   });
 
   const [quantities, setQuantities] = useState({});
+  const [toast, setToast] = useState({ show: false, message: '', item: null });
 
   useEffect(() => {
     try {
@@ -21,6 +24,17 @@ export const CartProvider = ({ children }) => {
       console.error("Failed to save cart to localStorage", e);
     }
   }, [cartItems]);
+
+  const triggerToast = (product) => {
+    setToast({
+      show: true,
+      message: `Added "${product.name}" to your basket!`,
+      item: product,
+    });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3500);
+  };
 
   const addToCart = (product, qty = 1) => {
     setCartItems((prev) => {
@@ -35,6 +49,7 @@ export const CartProvider = ({ children }) => {
         return [...prev, { product, quantity: Math.min(product.stock || 999, qty) }];
       }
     });
+    triggerToast(product);
   };
 
   const removeFromCart = (productId) => {
@@ -95,9 +110,42 @@ export const CartProvider = ({ children }) => {
         quantities,
         handleQuantityChange,
         setQuantities,
+        triggerToast,
       }}
     >
       {children}
+
+      {/* Floating Global Toast Alert Notification */}
+      {toast.show && toast.item && (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce-short transition-all duration-300">
+          <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3.5 max-w-sm sm:max-w-md">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Item Added To Basket</p>
+              <h4 className="text-sm font-semibold text-white truncate">{toast.item.name}</h4>
+              <p className="text-[11px] text-slate-400">Total Basket Items: <strong className="text-white">{totalItems}</strong></p>
+            </div>
+
+            <Link
+              to="/cart"
+              onClick={() => setToast({ show: false, message: '', item: null })}
+              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-sm shrink-0 flex items-center gap-1.5"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" /> Basket
+            </Link>
+
+            <button
+              onClick={() => setToast({ show: false, message: '', item: null })}
+              className="text-slate-400 hover:text-white p-1"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </CartContext.Provider>
   );
 };
