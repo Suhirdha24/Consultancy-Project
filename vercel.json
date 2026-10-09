@@ -17,13 +17,31 @@
   },
   "rewrites": [
     {
+      "source": "/admin",
+      "destination": {
+        "service": "vishal-supermarket-admin"
+      }
+    },
+    {
       "source": "/admin/(.*)",
       "destination": {
         "service": "vishal-supermarket-admin"
       }
     },
     {
+      "source": "/api",
+      "destination": {
+        "service": "vishal-supermarket-backend"
+      }
+    },
+    {
       "source": "/api/(.*)",
+      "destination": {
+        "service": "vishal-supermarket-backend"
+      }
+    },
+    {
+      "source": "/health",
       "destination": {
         "service": "vishal-supermarket-backend"
       }
