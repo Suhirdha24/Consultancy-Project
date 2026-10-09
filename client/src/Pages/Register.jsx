@@ -1,10 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import apiClient from "../lib/api";
 
 const Register = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -12,67 +13,108 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage({ text: "", type: "" });
     try {
-      await axios.post("http://localhost:5000/api/auth/register", form);
+      await apiClient.post("/auth/register", form);
       setMessage({ text: "Registration successful! You can now log in.", type: "success" });
     } catch (err) {
-      setMessage({ text: "Registration failed. Try again.", type: "error" });
+      const errMsg = err.response?.data?.message || "Registration failed. Please try again.";
+      setMessage({ text: errMsg, type: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-100 to-green-300">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md w-full max-w-md"
-      >
-        <h2 className="text-3xl font-bold mb-6 text-center text-green-700">Register</h2>
-        <input
-          type="text"
-          name="username"
-          onChange={handleChange}
-          placeholder="Username"
-          required
-          className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-        <input
-          type="email"
-          name="email"
-          onChange={handleChange}
-          placeholder="Email"
-          required
-          className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-        <input
-          type="password"
-          name="password"
-          onChange={handleChange}
-          placeholder="Password"
-          required
-          className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition font-semibold"
-        >
-          Register
-        </button>
+    <div className="min-h-[calc(100vh-140px)] flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-200 w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-600 text-white font-bold text-xl mb-3 shadow-sm">
+            V
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            Create an Account
+          </h2>
+          <p className="text-sm text-slate-500 mt-1">
+            Join <span className="font-semibold text-emerald-700">Vishal Super Market</span> for exclusive grocery deals
+          </p>
+        </div>
+
         {message.text && (
-          <p
-            className={`mt-4 text-center ${
-              message.type === "error" ? "text-red-600" : "text-green-600"
+          <div
+            className={`mb-6 p-4 rounded-xl text-sm font-medium border ${
+              message.type === "error"
+                ? "bg-red-50 text-red-700 border-red-200"
+                : "bg-emerald-50 text-emerald-700 border-emerald-200"
             }`}
           >
             {message.text}
-          </p>
+          </div>
         )}
-        <p className="mt-6 text-center text-gray-600">
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-xs font-medium text-slate-700 uppercase tracking-wider mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              placeholder="John Doe"
+              required
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400 transition text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 uppercase tracking-wider mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              required
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400 transition text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 uppercase tracking-wider mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              required
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder-slate-400 transition text-sm"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl transition font-semibold text-sm shadow-sm disabled:opacity-50"
+          >
+            {loading ? "Creating Account..." : "Register"}
+          </button>
+        </form>
+
+        <p className="mt-8 text-center text-sm text-slate-600">
           Already have an account?{" "}
-          <Link to="/login" className="text-green-700 font-medium hover:underline">
+          <Link to="/login" className="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline">
             Login
           </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 };
