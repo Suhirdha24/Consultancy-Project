@@ -1,0 +1,36 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "vishal-supermarket-admin": {
+      "root": "admin",
+      "framework": "vite"
+    },
+    "vishal-supermarket-storefront": {
+      "root": "client",
+      "framework": "vite"
+    },
+    "vishal-supermarket-backend": {
+      "root": "server"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/admin/(.*)",
+      "destination": {
+        "service": "vishal-supermarket-admin"
+      }
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "vishal-supermarket-backend"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "vishal-supermarket-storefront"
+      }
+    }
+  ]
+}
